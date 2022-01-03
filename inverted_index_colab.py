@@ -47,7 +47,10 @@ class MultiFileReader:
     b = []
     for f_name, offset in locs:
       if f_name not in self._open_files:
-        self._open_files[f_name] = open(f_name, 'rb')
+        ##my addittion - to open indices made on colab on the computer:
+        self._open_files[f_name] = open(f_name[1:], 'rb')
+        #original ! :
+        ##self._open_files[f_name] = open(f_name, 'rb')
       f = self._open_files[f_name]
       f.seek(offset)
       n_read = min(n_bytes, BLOCK_SIZE - offset)
@@ -81,6 +84,9 @@ class InvertedIndex:
     # stores posting list per term while building the index (internally), 
     # otherwise too big to store in memory.
     self._posting_list = defaultdict(list)
+
+    #stores the lenffth of each document
+    self.DL = {}
     # mapping a term to posting file locations, which is a list of 
     # (file_name, offset) pairs. Since posting lists are big we are going to
     # write them to disk and just save their location in this list. We are 
@@ -178,3 +184,15 @@ class InvertedIndex:
       # save file locations to index
         posting_locs[w].extend(locs)
     return posting_locs
+
+def read_posting_list(inverted, w):
+  with closing(MultiFileReader()) as reader:
+    locs = inverted.posting_locs[w]
+
+    b = reader.read(locs, inverted.df[w] * TUPLE_SIZE)
+    posting_list = []
+    for i in range(inverted.df[w]):
+      doc_id = int.from_bytes(b[i*TUPLE_SIZE:i*TUPLE_SIZE+4], 'big')
+      tf = int.from_bytes(b[i*TUPLE_SIZE+4:(i+1)*TUPLE_SIZE], 'big')
+      posting_list.append((doc_id, tf))
+    return posting_list
