@@ -11,11 +11,16 @@ from nltk.corpus import stopwords
 
 
 def createIndices():
+
     mod_path = os.path.dirname(os.path.realpath(__file__))
-    title_idx = InvertedIndex().read_index(path.join(mod_path , 'content/title/') ,'title' )
-    anchor_idx = InvertedIndex().read_index(path.join(mod_path , 'content/anchor/') ,'anchor' )
-    text_idx = InvertedIndex().read_index(path.join(mod_path, 'content/text/'), 'text')
+    print("Creating Indices")
+    title_idx = InvertedIndex().read_index(mod_path,'title' )
+    anchor_idx = InvertedIndex().read_index(mod_path ,'anchor' )
+    text_idx = InvertedIndex().read_index(mod_path, 'text')
+
+    print("Searchinh Anchor index for query \'political\'")
     print(read_posting_list(anchor_idx, 'political'))
+    print("Searchinh Title index for query \'abraham\'")
     print(read_posting_list(title_idx, 'abraham'))
 
 
@@ -38,4 +43,4 @@ if __name__ =="__main__":
     mod_path = os.path.dirname(os.path.realpath(__file__))
 
     print('CHANGE INDICES TO DIFFERENT HASH RANGES FOR EASIER ACCESS ')
-
+    createIndices()
