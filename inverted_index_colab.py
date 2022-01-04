@@ -10,7 +10,7 @@ import pickle
 from contextlib import closing
 
 BLOCK_SIZE = 1999998
-
+###ffjfjsnddsd
 class MultiFileWriter:
     """ Sequential binary writer to multiple files of up to BLOCK_SIZE each. """
     def __init__(self, base_dir, name):
