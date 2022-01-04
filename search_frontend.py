@@ -1,5 +1,21 @@
 from flask import Flask, request, jsonify
 
+##colab , pay attention !
+from inverted_index_colab import *
+
+import Retrivers as ret
+
+##index creation
+
+mod_path = os.path.dirname(os.path.realpath(__file__))  #maybe non relevant ?
+print("Creating Indices")
+title_idx = InvertedIndex().read_index(mod_path, 'title')
+anchor_idx = InvertedIndex().read_index(mod_path, 'anchor')
+text_idx = InvertedIndex().read_index(mod_path, 'text')
+
+print("PLACE TITLE DICT HERE ! ")
+
+
 class MyFlaskApp(Flask):
     def run(self, host=None, port=None, debug=None, **options):
         super(MyFlaskApp, self).run(host=host, port=port, debug=debug, **options)
@@ -56,7 +72,7 @@ def search_body():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-
+    res = ret.get_TFIDF(query, text_idx ,100)
     # END SOLUTION
     return jsonify(res)
 
@@ -82,7 +98,7 @@ def search_title():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-
+    res = ret.get_binary(query, title_idx)
     # END SOLUTION
     return jsonify(res)
 
@@ -109,7 +125,7 @@ def search_anchor():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    
+    res = ret.get_binary(query, anchor_idx)
     # END SOLUTION
     return jsonify(res)
 
