@@ -1,4 +1,3 @@
-
 from inverted_index_colab import *
 import nltk
 from nltk.tokenize import word_tokenize
@@ -8,8 +7,8 @@ from numpy.linalg import norm
 import pandas as pd
 import HWTFIDFPIPE as pipe1
 
-#should be activated only one time !
-#nltk.download('stopwords')
+# should be activated only one time !
+# nltk.download('stopwords')
 
 
 from nltk.corpus import stopwords
@@ -24,13 +23,19 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 
 all_stopwords = english_stopwords.union(corpus_stopwords)
 
-
 PIPE = 'HW'
 
-#reading the title dictionary - MOVE IT TO MAIN AFTER TESTING
+# reading the title dictionary - MOVE IT TO MAIN AFTER TESTING
 with open('title_dic.pkl', 'rb') as f:
     title_dict = pickle.load(f)
 
+# reading the pagerank dictionary - MOVE IT TO MAIN AFTER TESTING
+with open('pr.pkl', 'rb') as f:
+    pr_dict = pickle.load(f)
+
+# reading the pageviews dictionary - MOVE IT TO MAIN AFTER TESTING
+with open('pageviews-202108-user.pkl', 'rb') as f:
+    pv_dict = pickle.load(f)
 
 
 def get_binary(query, inv_idx):
@@ -45,15 +50,15 @@ def get_binary(query, inv_idx):
     for token in tokens:
         try:
             res = read_posting_list(inv_idx, token)
-            for doc_id , amount in res:
+            for doc_id, amount in res:
                 try:
-                    out[doc_id]+=1
+                    out[doc_id] += 1
                 except:
                     out[doc_id] = 1
         except Exception as e:
-            print('error in Anchor/title index occured - ' , e)
+            print('error in Anchor/title index occured - ', e)
 
-    return [(id , title_dict[id]) for id in sorted(out , key=out.get ,reverse = True)]
+    return [(id, title_dict[id]) for id in sorted(out, key=out.get, reverse=True)]
 
 
 def PreProc(text):
@@ -65,7 +70,8 @@ def PreProc(text):
     if PIPE == 'HW':
         return pipe1.IR_Tokenize(text)
 
-def get_TFIDF(q_text , index , N):
+
+def get_TFIDF(q_text, index, N):
     """
     Function that retrives top N files matching each query accoding to TFIDF and cosine similarity.
     :param q_text: free text of query
@@ -76,16 +82,42 @@ def get_TFIDF(q_text , index , N):
                                                         value: list of pairs in the following format:(doc_id, score).
     """
 
-
-    #preprocess according to corpus preprocess
+    # preprocess according to corpus preprocess
     q_tokens = list(set(PreProc(q_text)))
 
-    #retrive docs and score
+    # retrive docs and score
 
     if PIPE == 'HW':
-        #HW expectes queries as ditionary of {id  : tokens }
-        res = pipe1.get_topN_score_for_queries({1 : q_tokens} , index , N)[1]
-        return [(id , title_dict[id]) for id ,score in res]
+        # HW expectes queries as ditionary of {id  : tokens }
+        res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
+        return [(id, title_dict[id]) for id, score in res]
 
 
+def get_pagerank(id_lst):
+    """
+    Function retrieves list of pagerankes suitability to list of docs id
+    :param id_lst: list of docs id
+    :return: list of pagerankes
+    """
+    pr_lst = []
+    for doc_id in id_lst:
+        try:
+            pr_lst.append(pr_dict[doc_id])
+        except:
+            pr_lst.append(-1)
+    return pr_lst
 
+
+def get_pageviews(id_lst):
+    """
+    Function retrieves list of pageviews suitability to list of docs id
+    :param id_lst: list of docs id
+    :return: list of pageviews
+    """
+    pv_lst = []
+    for doc_id in id_lst:
+        try:
+            pv_lst.append(pv_dict[doc_id])
+        except:
+            pv_lst.append(-1)
+    return pv_lst
