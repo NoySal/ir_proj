@@ -5,6 +5,23 @@ from inverted_index_colab import *
 
 import Retrivers as ret
 
+##importing !
+import nltk
+# should be activated only one time !
+nltk.download('stopwords')
+
+
+from nltk.corpus import stopwords
+
+english_stopwords = frozenset(stopwords.words('english'))
+
+# FROM GCP FOR THE SEARCH BODY PART
+corpus_stopwords = ["category", "references", "also", "external", "links",
+                    "may", "first", "see", "history", "people", "one", "two",
+                    "part", "thumb", "including", "second", "following",
+                    "many", "however", "would", "became"]
+
+all_stopwords = english_stopwords.union(corpus_stopwords)
 ##index creation
 
 mod_path = os.path.dirname(os.path.realpath(__file__))  #maybe non relevant ?
@@ -12,6 +29,18 @@ print("Creating Indices")
 title_idx = InvertedIndex().read_index(mod_path, 'title')
 anchor_idx = InvertedIndex().read_index(mod_path, 'anchor')
 text_idx = InvertedIndex().read_index(mod_path, 'text')
+
+# reading the title dictionary - MOVE IT TO MAIN AFTER TESTING
+with open('title_dic.pkl', 'rb') as f:
+    title_dict = pickle.load(f)
+
+# reading the pagerank dictionary - MOVE IT TO MAIN AFTER TESTING
+with open('pr.pkl', 'rb') as f:
+    pr_dict = pickle.load(f)
+
+# reading the pageviews dictionary - MOVE IT TO MAIN AFTER TESTING
+with open('pageviews-202108-user.pkl', 'rb') as f:
+    pv_dict = pickle.load(f)
 
 print("PLACE TITLE DICT HERE ! ")
 
@@ -47,7 +76,7 @@ def search():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-
+    res = ret.get_TFIDF(query, text_idx, 100 , PIPE = 'opt')
     # END SOLUTION
     return jsonify(res)
 
@@ -99,6 +128,7 @@ def search_title():
       return jsonify(res)
     # BEGIN SOLUTION
     res = ret.get_binary(query, title_idx)
+    res = [(id, title_dict[id]) for id in res]
     # END SOLUTION
     return jsonify(res)
 
@@ -126,6 +156,7 @@ def search_anchor():
       return jsonify(res)
     # BEGIN SOLUTION
     res = ret.get_binary(query, anchor_idx)
+    res = [(id, title_dict[id]) for id in res]
     # END SOLUTION
     return jsonify(res)
 

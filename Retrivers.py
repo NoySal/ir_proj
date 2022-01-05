@@ -7,6 +7,9 @@ from numpy.linalg import norm
 import pandas as pd
 import HWTFIDFPIPE as pipe1
 
+from opt_TfIDF import get_OPT_Tfidf
+
+import nltk
 # should be activated only one time !
 # nltk.download('stopwords')
 
@@ -23,20 +26,17 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 
 all_stopwords = english_stopwords.union(corpus_stopwords)
 
-PIPE = 'HW'
 
-# reading the title dictionary - MOVE IT TO MAIN AFTER TESTING
-with open('title_dic.pkl', 'rb') as f:
-    title_dict = pickle.load(f)
 
-# reading the pagerank dictionary - MOVE IT TO MAIN AFTER TESTING
-with open('pr.pkl', 'rb') as f:
-    pr_dict = pickle.load(f)
 
-# reading the pageviews dictionary - MOVE IT TO MAIN AFTER TESTING
-with open('pageviews-202108-user.pkl', 'rb') as f:
-    pv_dict = pickle.load(f)
 
+
+
+def Corpus_Tokenizer(query):
+    """"
+    Temporarely no corpus tokenizer used
+    """
+    return pipe1.IR_Tokenize(query)
 
 def get_binary(query, inv_idx):
     """
@@ -58,10 +58,10 @@ def get_binary(query, inv_idx):
         except Exception as e:
             print('error in Anchor/title index occured - ', e)
 
-    return [(id, title_dict[id]) for id in sorted(out, key=out.get, reverse=True)]
+    return sorted(out, key=out.get, reverse=True)
 
 
-def PreProc(text):
+def PreProc(text , PIPE):
     """
     preprocess pipeline according to corpus preprocess,  for TFIDF inquieries
     :param text:  free text
@@ -69,28 +69,38 @@ def PreProc(text):
     """
     if PIPE == 'HW':
         return pipe1.IR_Tokenize(text)
+    if PIPE == 'opt':
+        return Corpus_Tokenizer(text)
 
 
-def get_TFIDF(q_text, index, N):
+
+def get_TFIDF(q_text, index, N , PIPE = 'HW'):
     """
     Function that retrives top N files matching each query accoding to TFIDF and cosine similarity.
     :param q_text: free text of query
     :param index: inverted index to search in
     :param N: top number of documents to retrive
+    :param PIPE: differenciate between naive (homework pipe and optimized)
     :return: a dictionary of queries and topN pairs as follows:
                                                         key: query_id
                                                         value: list of pairs in the following format:(doc_id, score).
     """
-
     # preprocess according to corpus preprocess
-    q_tokens = list(set(PreProc(q_text)))
+    q_tokens = list(set(PreProc(q_text , PIPE)))
 
     # retrive docs and score
 
     if PIPE == 'HW':
         # HW expectes queries as ditionary of {id  : tokens }
         res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
-        return [(id, title_dict[id]) for id, score in res]
+
+
+    if PIPE == 'opt':
+        #using optimized tfIDF
+        res = get_OPT_Tfidf(q_tokens , index, N)
+        return [(id, title_dict[id]) for id in res]
+
+    return [(id, title_dict[id]) for id, score in res]
 
 
 def get_pagerank(id_lst):
@@ -121,3 +131,19 @@ def get_pageviews(id_lst):
         except:
             pv_lst.append(-1)
     return pv_lst
+
+from time import time
+
+def test_tfidf(query = 'field marshal killed thousand of indians holocaust is among us' , N=10):
+
+    index = InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')
+    start = time()
+    print('TESTING NAIVE : ')
+    print(get_TFIDF(query, index , N , PIPE = 'HW'))
+    print(f'took {time() - start} sec')
+    start = time()
+    print('TESTING Opt TFIDF : ')
+    print(get_TFIDF(query, index , N , PIPE = 'opt'))
+    print(f'took {time() - start} sec')
+
+    return

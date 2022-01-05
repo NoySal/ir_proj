@@ -30,10 +30,18 @@ def test_binary():
     res = ret.get_binary('Abraham Lincoln', title_idx)
     print(res)
 
-def test_tfidf(query , index =InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')  , N=3):
+def test_tfidf(query , N=10):
+    index = InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')
+    start = time()
+    print('TESTING NAIVE : ')
+    print(ret.get_TFIDF(query, index , N , PIPE = 'HW'))
+    print(f'took {time() - start} sec')
+    start = time()
+    print('TESTING Opt TFIDF : ')
+    print(ret.get_TFIDF(query, index , N , PIPE = 'opt'))
+    print(f'took {time() - start} sec')
 
-
-    return ret.get_TFIDF(query, index , N)
+    return
 
 
 
@@ -49,5 +57,5 @@ if __name__ =="__main__":
 
     mod_path = os.path.dirname(os.path.realpath(__file__))
 
-    #createIndices()
+
     print(test_tfidf('field marshal killed thousand of indians holocaust is among us'))

@@ -230,4 +230,3 @@ def get_topN_score_for_queries(queries_to_search, index, N=3):
 
     return N_dict
 
-
