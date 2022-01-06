@@ -51,19 +51,26 @@ def get_opt_BM25(q_tokens , index ,corpus_docs,avg_dl , k =1.5,b =0.75 , N=100):
     param N : int , number of best-fit docs to retrive
     :return: list of documents : title , sorted by their IDF score with query
     """
-
-    q_size = len(q_tokens)
+    ####
+    # if this method is good , we can create one new posting list , and one new q_idf dictionary.
+    # or at least q_idf dictionary for all the words.
+    ####
     q_tokens = list(Counter(q_tokens).items())
     sim_q = {}
     for q_word , q_count in q_tokens:
-        q_idf =  np.log((1+corpus_docs) / (index.df[q_word] + 0.5 ))
-        if q_word in index.term_total.keys():
-            for doc_id, word_count in read_posting_list(index, q_word):
-                tw = word_count * (k+1) / ( word_count + k * (  1 - b + b * index.DL[doc_id] / avg_dl ))
-                if doc_id in sim_q.keys():
-                    sim_q[doc_id] += tw * q_idf
-                else:
-                    sim_q[doc_id] = tw * q_idf
+        try:    #if a word is not in the dictionary
+            q_idf = np.log((1 + corpus_docs) / (index.df[q_word] + 0.5))
+            if q_word in index.term_total.keys():
+                for doc_id, word_count in read_posting_list(index, q_word):
+                    tw = word_count * (k + 1) / (word_count + k * (1 - b + b * index.DL[doc_id] / avg_dl))
+                    if doc_id in sim_q.keys():
+                        sim_q[doc_id] += tw * q_idf
+                    else:
+                        sim_q[doc_id] = tw * q_idf
+        except Exception as e:
+            print('BM25 word errpr  =' , e )
+            pass
+
 
     if len(sim_q) < 100:
         return sorted(sim_q , key = sim_q.get ,reverse=True)
