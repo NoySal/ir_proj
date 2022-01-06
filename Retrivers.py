@@ -6,6 +6,7 @@ import numpy as np
 from numpy.linalg import norm
 import pandas as pd
 import HWTFIDFPIPE as pipe1
+import pickle
 
 from opt_TfIDF import get_OPT_Tfidf
 
@@ -28,8 +29,14 @@ all_stopwords = english_stopwords.union(corpus_stopwords)
 
 
 
+# read pageviews dict
+with open('pageviews-202108-user.pkl', 'rb') as f:
+    pv_dict = pickle.loads(f.read())
 
 
+# # read pagerank dict
+with open('pr.pkl', 'rb') as f:
+    pr_dict = pickle.loads(f.read())
 
 
 def Corpus_Tokenizer(query):
@@ -37,6 +44,7 @@ def Corpus_Tokenizer(query):
     Temporarely no corpus tokenizer used
     """
     return pipe1.IR_Tokenize(query)
+
 
 def get_binary(query, inv_idx):
     """
@@ -61,7 +69,7 @@ def get_binary(query, inv_idx):
     return sorted(out, key=out.get, reverse=True)
 
 
-def PreProc(text , PIPE):
+def PreProc(text, PIPE):
     """
     preprocess pipeline according to corpus preprocess,  for TFIDF inquieries
     :param text:  free text
@@ -73,8 +81,7 @@ def PreProc(text , PIPE):
         return Corpus_Tokenizer(text)
 
 
-
-def get_TFIDF(q_text, index, N , PIPE = 'HW'):
+def get_TFIDF(q_text, index, N, PIPE='HW'):
     """
     Function that retrives top N files matching each query accoding to TFIDF and cosine similarity.
     :param q_text: free text of query
@@ -86,7 +93,7 @@ def get_TFIDF(q_text, index, N , PIPE = 'HW'):
                                                         value: list of pairs in the following format:(doc_id, score).
     """
     # preprocess according to corpus preprocess
-    q_tokens = list(set(PreProc(q_text , PIPE)))
+    q_tokens = list(set(PreProc(q_text, PIPE)))
 
     # retrive docs and score
 
@@ -94,10 +101,9 @@ def get_TFIDF(q_text, index, N , PIPE = 'HW'):
         # HW expectes queries as ditionary of {id  : tokens }
         res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
 
-
     if PIPE == 'opt':
-        #using optimized tfIDF
-        res = get_OPT_Tfidf(q_tokens , index, N)
+        # using optimized tfIDF
+        res = get_OPT_Tfidf(q_tokens, index, N)
         return [(id, title_dict[id]) for id in res]
 
     return [(id, title_dict[id]) for id, score in res]
@@ -132,18 +138,21 @@ def get_pageviews(id_lst):
             pv_lst.append(-1)
     return pv_lst
 
+
 from time import time
 
-def test_tfidf(query = 'field marshal killed thousand of indians holocaust is among us' , N=10):
 
+def test_tfidf(query='field marshal killed thousand of indians holocaust is among us', N=10):
     index = InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')
     start = time()
     print('TESTING NAIVE : ')
-    print(get_TFIDF(query, index , N , PIPE = 'HW'))
+    print(get_TFIDF(query, index, N, PIPE='HW'))
     print(f'took {time() - start} sec')
     start = time()
     print('TESTING Opt TFIDF : ')
-    print(get_TFIDF(query, index , N , PIPE = 'opt'))
+    print(get_TFIDF(query, index, N, PIPE='opt'))
     print(f'took {time() - start} sec')
 
     return
+
+

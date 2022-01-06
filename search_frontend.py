@@ -180,9 +180,7 @@ def get_pagerank():
     wiki_ids = request.get_json()
     if len(wiki_ids) == 0:
       return jsonify(res)
-    # BEGIN SOLUTION
-
-    # END SOLUTION
+    res = ret.get_pagerank(wiki_ids)
     return jsonify(res)
 
 @app.route("/get_pageview", methods=['POST'])
@@ -207,9 +205,7 @@ def get_pageview():
     wiki_ids = request.get_json()
     if len(wiki_ids) == 0:
       return jsonify(res)
-    # BEGIN SOLUTION
-
-    # END SOLUTION
+    res = ret.get_pageviews(wiki_ids)
     return jsonify(res)
 
 
