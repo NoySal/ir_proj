@@ -87,7 +87,8 @@ def get_TFIDF(q_text, index, N, PIPE='HW'):
 
     if PIPE == 'HW':
         # HW expectes queries as ditionary of {id  : tokens }
-        res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
+        #res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
+        res = get_OPT_Tfidf(q_tokens, index, N)
 
     if PIPE == 'opt':
         # using optimized tfIDF

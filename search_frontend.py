@@ -104,7 +104,7 @@ def search_body():
     if len(query) == 0:
         return jsonify(res)
     # BEGIN SOLUTION
-    res = ret.get_TFIDF(query, text_idx, 100)
+    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, 100)]
     # END SOLUTION
     return jsonify(res)
 
