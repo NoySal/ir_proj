@@ -28,17 +28,6 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 all_stopwords = english_stopwords.union(corpus_stopwords)
 
 
-
-# read pageviews dict
-with open('pageviews-202108-user.pkl', 'rb') as f:
-    pv_dict = pickle.loads(f.read())
-
-
-# # read pagerank dict
-with open('pr.pkl', 'rb') as f:
-    pr_dict = pickle.loads(f.read())
-
-
 def Corpus_Tokenizer(query):
     """"
     Temporarely no corpus tokenizer used
@@ -122,21 +111,6 @@ def get_pagerank(id_lst):
         except:
             pr_lst.append(-1)
     return pr_lst
-
-
-def get_pageviews(id_lst):
-    """
-    Function retrieves list of pageviews suitability to list of docs id
-    :param id_lst: list of docs id
-    :return: list of pageviews
-    """
-    pv_lst = []
-    for doc_id in id_lst:
-        try:
-            pv_lst.append(pv_dict[doc_id])
-        except:
-            pv_lst.append(-1)
-    return pv_lst
 
 
 from time import time

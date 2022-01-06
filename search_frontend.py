@@ -7,9 +7,9 @@ import Retrivers as ret
 
 ##importing !
 import nltk
+
 # should be activated only one time !
 nltk.download('stopwords')
-
 
 from nltk.corpus import stopwords
 
@@ -24,7 +24,7 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 all_stopwords = english_stopwords.union(corpus_stopwords)
 ##index creation
 
-mod_path = os.path.dirname(os.path.realpath(__file__))  #maybe non relevant ?
+mod_path = os.path.dirname(os.path.realpath(__file__))  # maybe non relevant ?
 print("Creating Indices")
 title_idx = InvertedIndex().read_index(mod_path, 'title')
 anchor_idx = InvertedIndex().read_index(mod_path, 'anchor')
@@ -48,6 +48,7 @@ print("PLACE TITLE DICT HERE ! ")
 class MyFlaskApp(Flask):
     def run(self, host=None, port=None, debug=None, **options):
         super(MyFlaskApp, self).run(host=host, port=port, debug=debug, **options)
+
 
 app = MyFlaskApp(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
@@ -74,11 +75,12 @@ def search():
     res = []
     query = request.args.get('query', '')
     if len(query) == 0:
-      return jsonify(res)
+        return jsonify(res)
     # BEGIN SOLUTION
-    res = ret.get_TFIDF(query, text_idx, 100 , PIPE = 'opt')
+    res = ret.get_TFIDF(query, text_idx, 100, PIPE='opt')
     # END SOLUTION
     return jsonify(res)
+
 
 @app.route("/search_body")
 def search_body():
@@ -99,11 +101,12 @@ def search_body():
     res = []
     query = request.args.get('query', '')
     if len(query) == 0:
-      return jsonify(res)
+        return jsonify(res)
     # BEGIN SOLUTION
-    res = ret.get_TFIDF(query, text_idx ,100)
+    res = ret.get_TFIDF(query, text_idx, 100)
     # END SOLUTION
     return jsonify(res)
+
 
 @app.route("/search_title")
 def search_title():
@@ -125,12 +128,13 @@ def search_title():
     res = []
     query = request.args.get('query', '')
     if len(query) == 0:
-      return jsonify(res)
+        return jsonify(res)
     # BEGIN SOLUTION
     res = ret.get_binary(query, title_idx)
     res = [(id, title_dict[id]) for id in res]
     # END SOLUTION
     return jsonify(res)
+
 
 @app.route("/search_anchor")
 def search_anchor():
@@ -153,12 +157,13 @@ def search_anchor():
     res = []
     query = request.args.get('query', '')
     if len(query) == 0:
-      return jsonify(res)
+        return jsonify(res)
     # BEGIN SOLUTION
     res = ret.get_binary(query, anchor_idx)
     res = [(id, title_dict[id]) for id in res]
     # END SOLUTION
     return jsonify(res)
+
 
 @app.route("/get_pagerank", methods=['POST'])
 def get_pagerank():
@@ -179,9 +184,14 @@ def get_pagerank():
     res = []
     wiki_ids = request.get_json()
     if len(wiki_ids) == 0:
-      return jsonify(res)
-    res = ret.get_pagerank(wiki_ids)
+        return jsonify(res)
+    for doc_id in wiki_ids:
+        try:
+            res.append(pr_dict[doc_id])
+        except:
+            res.append(-1)
     return jsonify(res)
+
 
 @app.route("/get_pageview", methods=['POST'])
 def get_pageview():
@@ -204,8 +214,12 @@ def get_pageview():
     res = []
     wiki_ids = request.get_json()
     if len(wiki_ids) == 0:
-      return jsonify(res)
-    res = ret.get_pageviews(wiki_ids)
+        return jsonify(res)
+    for doc_id in wiki_ids:
+        try:
+            res.append(pv_dict[doc_id])
+        except:
+            res.append(-1)
     return jsonify(res)
 
 
