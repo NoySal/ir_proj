@@ -65,9 +65,6 @@ def get_opt_BM25(q_tokens , index ,corpus_docs,avg_dl , k =1.5,b =0.75 , N=100):
                 else:
                     sim_q[doc_id] = tw * q_idf
 
-    for doc_id in sim_q.keys():
-        sim_q[doc_id] = sim_q[doc_id]*(1/q_size) * (1/index.DL[doc_id])
-
     if len(sim_q) < 100:
         return sorted(sim_q , key = sim_q.get ,reverse=True)
     else: #use heap sort and return
