@@ -1,4 +1,5 @@
-from inverted_index_colab import *
+from inverted_index_gcp import *
+
 import nltk
 from nltk.tokenize import word_tokenize
 import math
@@ -77,9 +78,7 @@ def get_TFIDF(q_text, index, N, PIPE='HW'):
     :param index: inverted index to search in
     :param N: top number of documents to retrive
     :param PIPE: differenciate between naive (homework pipe and optimized)
-    :return: a dictionary of queries and topN pairs as follows:
-                                                        key: query_id
-                                                        value: list of pairs in the following format:(doc_id, score).
+    :return: list of docs id, sorted by rank
     """
     # preprocess according to corpus preprocess
     q_tokens = list(set(PreProc(q_text, PIPE)))
@@ -93,12 +92,12 @@ def get_TFIDF(q_text, index, N, PIPE='HW'):
     if PIPE == 'opt':
         # using optimized tfIDF
         res = get_OPT_Tfidf(q_tokens, index, N)
-        return [(id, title_dict[id]) for id in res]
+        return res
 
-    return [(id, title_dict[id]) for id, score in res]
+    return res
 
 
-def get_pagerank(id_lst):
+def get_pagerank(id_lst , pr_dict):
     """
     Function retrieves list of pagerankes suitability to list of docs id
     :param id_lst: list of docs id

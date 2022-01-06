@@ -1,4 +1,4 @@
-from inverted_index_colab import *
+from inverted_index_gcp import *
 from os import path
 import nltk
 import Retrivers as ret
@@ -12,11 +12,11 @@ from nltk.corpus import stopwords
 
 def createIndices():
 
-    mod_path = os.path.dirname(os.path.realpath(__file__))
+    mod_path = '.'
     print("Creating Indices")
-    title_idx = InvertedIndex().read_index(mod_path,'title' )
-    anchor_idx = InvertedIndex().read_index(mod_path ,'anchor' )
-    text_idx = InvertedIndex().read_index(mod_path, 'text')
+    title_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'),'title' )
+    anchor_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp') ,'anchor' )
+    text_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'text')
 
     print("Searching Anchor index for query \'political\'")
     print(read_posting_list(anchor_idx, 'political'))
@@ -25,13 +25,14 @@ def createIndices():
 
 
 def test_binary():
-    mod_path = os.path.dirname(os.path.realpath(__file__))
-    title_idx = InvertedIndex().read_index(mod_path, 'title')
+    mod_path = '.'
+    title_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'title')
     res = ret.get_binary('Abraham Lincoln', title_idx)
     print(res)
 
 def test_tfidf(query , N=10):
-    index = InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')
+    mod_path='.'
+    index = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'text')
     start = time()
     print('TESTING NAIVE : ')
     print(ret.get_TFIDF(query, index , N , PIPE = 'HW'))
@@ -53,9 +54,15 @@ def test_tokenizer(text):
     print(tokens)
 
     return tokens
+
+
 if __name__ =="__main__":
 
-    mod_path = os.path.dirname(os.path.realpath(__file__))
+    mod_path = '.'
 
 
-    print(test_tfidf('field marshal killed thousand of indians holocaust is among us'))
+    #print(test_tfidf('field marshal killed thousand of indians holocaust is among us'))
+    with open('title_dic.pkl', 'rb') as f:
+        title_dict = pickle.load(f)
+
+    print(title_dict[18110])

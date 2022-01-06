@@ -2,7 +2,8 @@
 import numpy as np
 import pandas as pd
 import math
-from inverted_index_colab import *
+from inverted_index_gcp import *
+
 from numpy.linalg import norm
 from HWTFIDFPIPE import get_posting_gen , IR_Tokenize
 from heapq import nlargest

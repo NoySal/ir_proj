@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 
 ##colab , pay attention !
-from inverted_index_colab import *
+from inverted_index_gcp import *
+
 
 import Retrivers as ret
 
@@ -24,25 +25,25 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 all_stopwords = english_stopwords.union(corpus_stopwords)
 ##index creation
 
-mod_path = os.path.dirname(os.path.realpath(__file__))  # maybe non relevant ?
+mod_path ='.'
 print("Creating Indices")
-title_idx = InvertedIndex().read_index(mod_path, 'title')
-anchor_idx = InvertedIndex().read_index(mod_path, 'anchor')
-text_idx = InvertedIndex().read_index(mod_path, 'text')
+title_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'title')
+anchor_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'anchor')
+text_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'text')
 
-# reading the title dictionary - MOVE IT TO MAIN AFTER TESTING
+# reading the title dictionary
 with open('title_dic.pkl', 'rb') as f:
     title_dict = pickle.load(f)
 
-# reading the pagerank dictionary - MOVE IT TO MAIN AFTER TESTING
+# reading the pagerank dictionary
 with open('pr.pkl', 'rb') as f:
     pr_dict = pickle.load(f)
 
-# reading the pageviews dictionary - MOVE IT TO MAIN AFTER TESTING
+# reading the pageviews dictionary
 with open('pageviews-202108-user.pkl', 'rb') as f:
     pv_dict = pickle.load(f)
 
-print("PLACE TITLE DICT HERE ! ")
+
 
 
 class MyFlaskApp(Flask):
