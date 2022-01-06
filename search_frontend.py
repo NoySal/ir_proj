@@ -31,6 +31,13 @@ title_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), '
 anchor_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'anchor')
 text_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'text')
 
+
+##calculations :
+
+corpus_docs = np.mean(list(text_idx.DL.values()))
+avg_dl = np.mean(list())
+
+
 # reading the title dictionary
 with open('title_dic.pkl', 'rb') as f:
     title_dict = pickle.load(f)
@@ -78,7 +85,7 @@ def search():
     if len(query) == 0:
         return jsonify(res)
     # BEGIN SOLUTION
-    res = ret.get_TFIDF(query, text_idx, 100, PIPE='opt')
+    res = ret.get_TFIDF(query, text_idx, 100, corpus_docs, avg_dl, PIPE='opt')
     # END SOLUTION
     return jsonify(res)
 
@@ -104,7 +111,7 @@ def search_body():
     if len(query) == 0:
         return jsonify(res)
     # BEGIN SOLUTION
-    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, 100)]
+    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, 100, corpus_docs, avg_dl)]
     # END SOLUTION
     return jsonify(res)
 

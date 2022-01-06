@@ -71,12 +71,14 @@ def PreProc(text, PIPE):
         return Corpus_Tokenizer(text)
 
 
-def get_TFIDF(q_text, index, N, PIPE='HW'):
+def get_TFIDF(q_text, index, N,corpus_docs , avg_dl ,  PIPE='HW'):
     """
     Function that retrives top N files matching each query accoding to TFIDF and cosine similarity.
     :param q_text: free text of query
     :param index: inverted index to search in
     :param N: top number of documents to retrive
+    :param corpus_docs : int , optimization - number of docs in corpus
+    param avg_dl : float, optimization - average document size in corpus
     :param PIPE: differenciate between naive (homework pipe and optimized)
     :return: list of docs id, sorted by rank
     """
@@ -88,11 +90,11 @@ def get_TFIDF(q_text, index, N, PIPE='HW'):
     if PIPE == 'HW':
         # HW expectes queries as ditionary of {id  : tokens }
         #res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
-        res = get_OPT_Tfidf(q_tokens, index, N)
+        res = get_OPT_Tfidf(q_tokens, index,corpus_docs , N)
 
     if PIPE == 'opt':
         # using optimized tfIDF
-        res = get_OPT_Tfidf(q_tokens, index, N)
+        res = get_opt_BM25(q_tokens, index,corpus_docs , avg_dl , N)
         return res
 
     return res
