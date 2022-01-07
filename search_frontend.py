@@ -1,14 +1,9 @@
 from flask import Flask, request, jsonify
 
-##colab , pay attention !
 from inverted_index_gcp import *
-
-
 import Retrivers as ret
-
 ##importing !
 import nltk
-
 # should be activated only one time !
 nltk.download('stopwords')
 
@@ -23,6 +18,7 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
                     "many", "however", "would", "became"]
 
 all_stopwords = english_stopwords.union(corpus_stopwords)
+
 ##index creation
 
 mod_path ='.'
