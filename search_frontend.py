@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 
 from inverted_index_gcp import *
 import Retrivers as ret
+import numpy as np
 ##importing !
 import nltk
 # should be activated only one time !
