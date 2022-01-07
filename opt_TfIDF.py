@@ -39,7 +39,7 @@ def get_OPT_Tfidf(q_tokens , index ,corpus_docs, N=100):
         top_100 = nlargest(N, sim_q , key = sim_q.get )
         return sorted(top_100 ,reverse=True)
 
-def get_opt_BM25(q_tokens , index ,corpus_docs,avg_dl , k =1.5,b =0.75 , N=100):
+def get_opt_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100):
     """
     BM25 retrival model from inverted index .
     param q_tokens - list of str,  tokens of words processed like corpus.

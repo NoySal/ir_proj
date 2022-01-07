@@ -70,7 +70,7 @@ def PreProc(text, PIPE):
         return Corpus_Tokenizer(text)
 
 
-def get_TFIDF(q_text, index, N,corpus_docs , avg_dl ,  PIPE='HW'):
+def get_TFIDF(q_text, index, corpus_docs , avg_dl , N=100, PIPE='HW'):
     """
     Function that retrives top N files matching each query accoding to TFIDF and cosine similarity.
     :param q_text: free text of query
@@ -89,11 +89,11 @@ def get_TFIDF(q_text, index, N,corpus_docs , avg_dl ,  PIPE='HW'):
     if PIPE == 'HW':
         # HW expectes queries as ditionary of {id  : tokens }
         #res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
-        res = get_OPT_Tfidf(q_tokens, index,N ,corpus_docs)
+        res = get_OPT_Tfidf(q_tokens, index ,corpus_docs , N)
 
     if PIPE == 'opt':
         # using optimized tfIDF
-        res = get_opt_BM25(q_tokens, index, N ,corpus_docs , avg_dl )
+        res = get_opt_BM25(q_tokens, index, corpus_docs , avg_dl, N )
         return res
 
     return res
@@ -114,20 +114,7 @@ def get_pagerank(id_lst , pr_dict):
     return pr_lst
 
 
-from time import time
 
 
-def test_tfidf(query='field marshal killed thousand of indians holocaust is among us', N=10):
-    index = InvertedIndex().read_index(os.path.dirname(os.path.realpath(__file__)), 'text')
-    start = time()
-    print('TESTING NAIVE : ')
-    print(get_TFIDF(query, index, N, PIPE='HW'))
-    print(f'took {time() - start} sec')
-    start = time()
-    print('TESTING Opt TFIDF : ')
-    print(get_TFIDF(query, index, N, PIPE='opt'))
-    print(f'took {time() - start} sec')
-
-    return
 
 
