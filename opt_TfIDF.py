@@ -58,7 +58,7 @@ def get_opt_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100
     q_tokens = list(Counter(q_tokens).items())
     sim_q = {}
     for q_word , q_count in q_tokens:
-        try:    #if a word is not in the dictionary
+        if q_word in index.term_total.keys():
             q_idf = np.log((1 + corpus_docs) / (index.df[q_word] + 0.5))
             if q_word in index.term_total.keys():
                 for doc_id, word_count in read_posting_list(index, q_word):
@@ -67,9 +67,6 @@ def get_opt_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100
                         sim_q[doc_id] += tw * q_idf
                     else:
                         sim_q[doc_id] = tw * q_idf
-        except Exception as e:
-            print('BM25 word errpr  =' , e )
-            pass
 
 
     if len(sim_q) < 100:
