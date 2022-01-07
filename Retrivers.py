@@ -1,5 +1,4 @@
 from inverted_index_gcp import *
-
 import nltk
 from nltk.tokenize import word_tokenize
 import math
