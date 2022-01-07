@@ -8,7 +8,7 @@ import pandas as pd
 import HWTFIDFPIPE as pipe1
 import pickle
 
-from opt_TfIDF import get_OPT_Tfidf
+from opt_TfIDF import *
 
 import nltk
 # should be activated only one time !
