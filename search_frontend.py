@@ -82,7 +82,7 @@ def search():
     if len(query) == 0:
         return jsonify(res)
     # BEGIN SOLUTION
-    res = ret.get_TFIDF(query, text_idx, corpus_docs, avg_dl, N=100 , PIPE='opt')
+    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, corpus_docs, avg_dl, N=100 , PIPE='opt')]
     # END SOLUTION
     return jsonify(res)
 
