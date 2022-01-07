@@ -31,8 +31,8 @@ text_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 't
 
 ##calculations :
 
-corpus_docs = np.mean(list(text_idx.DL.values()))
-avg_dl = np.mean(list())
+corpus_docs = len(list(text_idx.DL.values()))
+avg_dl = np.mean(list(text_idx.DL.values()))
 
 
 # reading the title dictionary
