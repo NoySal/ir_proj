@@ -89,11 +89,11 @@ def get_TFIDF(q_text, index, N,corpus_docs , avg_dl ,  PIPE='HW'):
     if PIPE == 'HW':
         # HW expectes queries as ditionary of {id  : tokens }
         #res = pipe1.get_topN_score_for_queries({1: q_tokens}, index, N)[1]
-        res = get_OPT_Tfidf(q_tokens, index,corpus_docs , N)
+        res = get_OPT_Tfidf(q_tokens, index,N ,corpus_docs)
 
     if PIPE == 'opt':
         # using optimized tfIDF
-        res = get_opt_BM25(q_tokens, index,corpus_docs , avg_dl , N)
+        res = get_opt_BM25(q_tokens, index, N ,corpus_docs , avg_dl )
         return res
 
     return res
