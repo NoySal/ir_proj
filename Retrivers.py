@@ -28,7 +28,7 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 all_stopwords = english_stopwords.union(corpus_stopwords)
 
 
-def Corpus_Tokenizer(query):
+def Corpus_Tokenizer(text):
     """"
     Temporarely the usual
     """
