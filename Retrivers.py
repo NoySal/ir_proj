@@ -12,7 +12,7 @@ from opt_TfIDF import *
 
 import nltk
 # should be activated only one time !
-# nltk.download('stopwords')
+#nltk.download('stopwords')
 
 
 from nltk.corpus import stopwords
@@ -30,9 +30,12 @@ all_stopwords = english_stopwords.union(corpus_stopwords)
 
 def Corpus_Tokenizer(query):
     """"
-    Temporarely no corpus tokenizer used
+    Temporarely the usual
     """
-    return pipe1.IR_Tokenize(query)
+    RE_WORD = re.compile(r"""[\#\@\w](['\-]?\w){2,24}""", re.UNICODE)
+    tokens = [token.group() for token in RE_WORD.finditer(text.lower())]
+    return [token for token in tokens if token not in all_stopwords]
+
 
 
 def get_binary(query, inv_idx):
@@ -114,7 +117,10 @@ def get_pagerank(id_lst , pr_dict):
     return pr_lst
 
 
-
+if __name__ =="__main__":
+    queries = ['what is love' , 'why do men have nipples' , 'what to watch']
+    for q in queries:
+        print(New_Tokenizer(q))
 
 
 
