@@ -13,7 +13,7 @@ from opt_TfIDF import *
 import nltk
 # should be activated only one time !
 #nltk.download('stopwords')
-
+from nltk.stem import WordNetLemmatizer
 
 from nltk.corpus import stopwords
 
@@ -28,13 +28,17 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
 all_stopwords = english_stopwords.union(corpus_stopwords)
 
 
-def Corpus_Tokenizer(text):
+def Corpus_Tokenizer(text, method ='norm'):
     """"
     Temporarely the usual
     """
+    lemmatizer = WordNetLemmatizer()
     RE_WORD = re.compile(r"""[\#\@\w](['\-]?\w){2,24}""", re.UNICODE)
     tokens = [token.group() for token in RE_WORD.finditer(text.lower())]
-    return [token for token in tokens if token not in all_stopwords]
+    if method =='norm':
+        return [token for token in tokens if token not in all_stopwords]
+    if method =='lem':
+        return [lemmatizer.lemmatize(token) for token in tokens if token not in all_stopwords]
 
 
 
@@ -120,7 +124,7 @@ def get_pagerank(id_lst , pr_dict):
 if __name__ =="__main__":
     queries = ['what is love' , 'why do men have nipples' , 'what to watch']
     for q in queries:
-        print(New_Tokenizer(q))
+        print(Corpus_Tokenizer(q , method='lem'))
 
 
 

@@ -7,7 +7,8 @@ import numpy as np
 import nltk
 # should be activated only one time !
 nltk.download('stopwords')
-
+nltk.download('wordnet')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 
 english_stopwords = frozenset(stopwords.words('english'))

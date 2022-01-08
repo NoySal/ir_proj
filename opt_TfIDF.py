@@ -23,6 +23,8 @@ def get_OPT_Tfidf(q_tokens , index ,corpus_docs, N=100):
     for q_word , q_count in q_tokens:
         if q_word in index.term_total.keys():
             for doc_id, word_count in read_posting_list(index, q_word):
+                if doc_id==0:  #friggin missing values!
+                    continue
                 tw = word_count * np.log10(corpus_docs / index.df[q_word])
                 if doc_id in sim_q.keys():
                     sim_q[doc_id] += q_count * tw
@@ -62,6 +64,8 @@ def get_opt_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100
             q_idf = np.log((1 + corpus_docs) / (index.df[q_word] + 0.5))
             if q_word in index.term_total.keys():
                 for doc_id, word_count in read_posting_list(index, q_word):
+                    if doc_id == 0:  # friggin missing values!
+                        continue
                     tw = word_count * (k + 1) / (word_count + k * (1 - b + b * index.DL[doc_id] / avg_dl))
                     if doc_id in sim_q.keys():
                         sim_q[doc_id] += tw * q_idf
