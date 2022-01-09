@@ -87,7 +87,7 @@ def search():
         return jsonify(res)
     # BEGIN SOLUTION
 
-    res = text_title_Merge(query, text_idx, text_docs, avg_text_dl, title_idx, title_docs, avg_title_dl, N=200)
+    res = ret.text_title_Merge(query, text_idx, text_docs, avg_text_dl, title_idx, title_docs, avg_title_dl, N=200)
 
     # END SOLUTION
     return jsonify(res)
