@@ -81,8 +81,8 @@ def text_title_Merge(query, text_idx, text_n_docs, text_avg_doc, title_idx, titl
     tit_w = 0.31  # found via optimization
 
     q_tokens = Corpus_Tokenizer(query)
-    text_retrival = get_opt_BM25_for_joint(q_tokens, text_idx, text_docs, avg_txt_dl, N=N)
-    title_retrival = get_opt_BM25_for_joint(q_tokens, title_idx, title_docs, avg_tit_dl, N=N)
+    text_retrival = get_opt_BM25_for_joint(q_tokens, text_idx, text_n_docs, text_avg_doc, N=N)
+    title_retrival = get_opt_BM25_for_joint(q_tokens, title_idx, title_n_docs, title_avg_doc, N=N)
     doc_dict = {}
     for doc, score in text_retrival:
         doc_dict[doc] = tex_w * score
