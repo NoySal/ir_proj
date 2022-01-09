@@ -13,7 +13,6 @@ from opt_TfIDF import *
 import nltk
 # should be activated only one time !
 #nltk.download('stopwords')
-from nltk.stem import WordNetLemmatizer
 
 from nltk.corpus import stopwords
 
@@ -30,15 +29,14 @@ all_stopwords = english_stopwords.union(corpus_stopwords)
 
 def Corpus_Tokenizer(text, method ='norm'):
     """"
-    Temporarely the usual
+    During developing - had a 'stem' and 'lemm' methods.
     """
-    lemmatizer = WordNetLemmatizer()
+
     RE_WORD = re.compile(r"""[\#\@\w](['\-]?\w){2,24}""", re.UNICODE)
     tokens = [token.group() for token in RE_WORD.finditer(text.lower())]
     if method =='norm':
         return [token for token in tokens if token not in all_stopwords]
-    if method =='lem':
-        return [lemmatizer.lemmatize(token) for token in tokens if token not in all_stopwords]
+
 
 
 
@@ -49,7 +47,8 @@ def get_binary(query, inv_idx):
     :param inv_idx: inverted index to binary search in
     :return: list of relevant documents  , sorted by query tokens matches
     """
-    tokens = word_tokenize(query.lower())
+    #tokens = word_tokenize(query.lower())
+    tokens = Corpus_Tokenizer(query)
     out = {}
     for token in tokens:
         try:
@@ -65,16 +64,35 @@ def get_binary(query, inv_idx):
     return sorted(out, key=out.get, reverse=True)
 
 
-def PreProc(text, PIPE):
+
+def text_title_Merge(query, text_idx, text_n_docs, text_avg_doc, title_idx, title_n_docs, title_avg_doc, N=200):
     """
-    preprocess pipeline according to corpus preprocess,  for TFIDF inquieries
-    :param text:  free text
-    :return: tokens
+    recieves a query and run it on text and title indices.
+    returns a merged list of docs - based on TFIDF score of each index and pre-determined weights.
+    param query: string, query to tokenize and search.
+    param text_idx : inverted index of text.
+    param text_n_docs : int, number of docs in text
+    param text_avg_doc : float , average length of doc in text index.
+    param title_idx : inverted index of title
+    param title_n_docs : int, number of docs in title.
+    param title_avg_doc : float , average length of title docs.
+    returns : list of doc_id . sorted by combined tf-idf scores and weights.
     """
-    if PIPE == 'HW':
-        return pipe1.IR_Tokenize(text)
-    if PIPE == 'opt':
-        return Corpus_Tokenizer(text)
+    tex_w = 0.74  # found via optimization
+    tit_w = 0.31  # found via optimization
+
+    q_tokens = Corpus_Tokenizer(query)
+    text_docs = get_opt_BM25_for_joint(q_tokens, text_idx, text_n_docs,text_avg_doc, N)
+    title_docs = get_opt_BM25_for_joint(q_tokens, title_idx, title_n_docs, title_avg_doc, N)
+    doc_dict = {}
+    for i, (doc, score) in enumerate(text_docs):
+        doc_dict[doc] = tex_w * score
+    for i, (doc, score) in enumerate(title_docs):
+        if doc in doc_dict.keys():
+            doc_dict[doc] += tit_w * score
+        else:
+            doc_dict[doc] = tit_w * score
+    return sorted(doc_dict, key=doc_dict.get, reverse=True)
 
 
 def get_TFIDF(q_text, index, corpus_docs , avg_dl , N=100, PIPE='HW'):
@@ -89,7 +107,7 @@ def get_TFIDF(q_text, index, corpus_docs , avg_dl , N=100, PIPE='HW'):
     :return: list of docs id, sorted by rank
     """
     # preprocess according to corpus preprocess
-    q_tokens = list(set(PreProc(q_text, PIPE)))
+    q_tokens = list(set(Corpus_Tokenizer(q_text)))
 
     # retrive docs and score
 

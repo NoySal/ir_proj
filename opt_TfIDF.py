@@ -118,3 +118,44 @@ def get_opt_BM25(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
         heap = [(value, key) for key, value in sim_q.items()]
         top_N = nlargest(N, heap)
         return [value for key, value in sorted(top_N, reverse=True)]
+
+
+def get_opt_BM25_for_joint(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
+    """
+    BM25 retrival model from inverted index , intended for joining indices (returns tf score as well as doc)
+    param q_tokens - list of str,  tokens of words processed like corpus.
+    param index : inverted index class
+    :param corpus_docs : int , optimization - number of docs in corpus
+    param avg_dl : float, average document size in corpus
+    param k : float, range between [1.2 ,2] optimized to corpus
+    param b : float , ~0.75 optimizable
+    param N : int , number of best-fit docs to retrive
+    :return: list of tokens : (title,tf-idf score) , sorted by their IDF score with query
+    """
+    ####
+    # if this method is good , we can create one new posting list , and one new q_idf dictionary.
+    # or at least q_idf dictionary for all the words.
+    ####
+    q_tokens = list(Counter(q_tokens).items())
+    sim_q = {}
+    for q_word, q_count in q_tokens:
+        if q_word in index.term_total.keys():
+            q_idf = np.log((1 + corpus_docs) / (index.df[q_word] + 0.5))
+            if q_word in index.term_total.keys():
+                for doc_id, word_count in read_posting_list(index, q_word):
+                    if doc_id == 0:  # friggin missing values!
+                        continue
+                    tw = word_count * (k + 1) / (word_count + k * (1 - b + b * index.DL[doc_id] / avg_dl))
+                    if doc_id in sim_q.keys():
+                        sim_q[doc_id] += tw * q_idf
+                    else:
+                        sim_q[doc_id] = tw * q_idf
+
+    if len(sim_q) < N:
+        return [(key, sim_q[key]) for key in sorted(sim_q, key=sim_q.get, reverse=True)[:N]]
+    else:  # use heap sort and return
+        heap = [(value, key) for key, value in sim_q.items()]
+        top_N = nlargest(N, heap)
+        return [(value, key) for key, value in sorted(top_N, reverse=True)]
+
+
