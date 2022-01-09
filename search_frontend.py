@@ -20,21 +20,14 @@ corpus_stopwords = ["category", "references", "also", "external", "links",
                     "many", "however", "would", "became"]
 
 all_stopwords = english_stopwords.union(corpus_stopwords)
+### Loading pickles !
 
 ##index creation
-
 mod_path ='.'
 print("Creating Indices")
 title_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'title')
 anchor_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'anchor')
 text_idx = InvertedIndex().read_index(os.path.join(mod_path, 'postings_gcp'), 'text')
-
-
-##calculations :
-
-corpus_docs = len(list(text_idx.DL.values()))
-avg_dl = np.mean(list(text_idx.DL.values()))
-
 
 # reading the title dictionary
 with open('title_dic.pkl', 'rb') as f:
@@ -43,12 +36,22 @@ with open('title_dic.pkl', 'rb') as f:
 # reading the pagerank dictionary
 with open('pr.pkl', 'rb') as f:
     pr_dict = pickle.load(f)
-
 # reading the pageviews dictionary
 with open('pageviews-202108-user.pkl', 'rb') as f:
     pv_dict = pickle.load(f)
 
+##calculations :
 
+#index calculation for quick BM25 run :
+
+text_docs = len(list(text_idx.DL.values()))
+avg_text_dl = np.mean(list(text_idx.DL.values()))
+title_docs = len(list(title_idx.DL.values()))
+avg_title_dl = np.mean(list(title_idx.DL.values()))
+
+#PR and PV normalization for quick integrated-result:
+pr_scale = (max(pr_dict, key=pr_dict.get), min(pr_dict, key=pr_dict.get), np.mean(list(pr_dict.values())))
+pv_scale = (max(pv_dict, key=pv_dict.get), min(pv_dict, key=pv_dict.get), np.mean(list(pv_dict.values())))
 
 
 class MyFlaskApp(Flask):
@@ -84,7 +87,7 @@ def search():
         return jsonify(res)
     # BEGIN SOLUTION
 
-    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, corpus_docs, avg_dl, N=100 , PIPE='opt')]
+    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, text_docs, avg_text_dl, N=100 , PIPE='opt')]
 
     # END SOLUTION
     return jsonify(res)
@@ -111,7 +114,7 @@ def search_body():
     if len(query) == 0:
         return jsonify(res)
     # BEGIN SOLUTION
-    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, corpus_docs, avg_dl, N= 100 , PIPE='HW')]
+    res = [(doc_id, title_dict[doc_id]) for doc_id in ret.get_TFIDF(query, text_idx, text_docs, avg_text_dl, N= 100 , PIPE='HW')]
     # END SOLUTION
     return jsonify(res)
 
