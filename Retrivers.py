@@ -80,9 +80,9 @@ def text_title_Merge(query, text_idx, text_n_docs, text_avg_doc, title_idx, titl
     tex_w = 0.74  # found via optimization
     tit_w = 0.31  # found via optimization
 
-    q_tokens = Corpus_Tokenizer(query)
-    text_retrival = get_opt_BM25_for_joint(q_tokens, text_idx, text_n_docs, text_avg_doc, N=N)
-    title_retrival = get_opt_BM25_for_joint(q_tokens, title_idx, title_n_docs, title_avg_doc, N=N)
+    q_tokens = ret.Corpus_Tokenizer(q)
+    text_retrival = get_opt_BM25_for_joint(q_tokens, text_idx, text_docs, avg_txt_dl, N=N)
+    title_retrival = get_opt_BM25_for_joint(q_tokens, title_idx, title_docs, avg_tit_dl, N=N)
     doc_dict = {}
     for doc, score in text_retrival:
         doc_dict[doc] = tex_w * score
@@ -91,7 +91,9 @@ def text_title_Merge(query, text_idx, text_n_docs, text_avg_doc, title_idx, titl
             doc_dict[doc] += tit_w * score
         else:
             doc_dict[doc] = tit_w * score
-    return sorted(doc_dict, key=doc_dict.get, reverse=True)
+    q_res = sorted(doc_dict, key=doc_dict.get, reverse=True)
+
+    return q_res
 
 def weightSort(docs, prw , pvw ,pr_scale , pv_scale,tw  ):
   """
