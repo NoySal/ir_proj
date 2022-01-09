@@ -36,7 +36,7 @@ def get_OPT_Tfidf(q_tokens , index ,corpus_docs, N=100):
 
 
     if True: #len(sim_q) < 100: ##heap sort makes thing wrong!
-        return sorted(sim_q , key = sim_q.get ,reverse=True)
+        return sorted(sim_q, key=sim_q.get, reverse=True)[:100]
     else: #use heap sort and return
         top_100 = nlargest(N, sim_q , key = sim_q.get )
         return sorted(top_100 ,reverse=True)
@@ -74,7 +74,7 @@ def get_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100):
 
 
     if True: #len(sim_q) < 100: ##heap sort makes thing wrong!
-        return sorted(sim_q , key = sim_q.get ,reverse=True)
+        return sorted(sim_q, key=sim_q.get, reverse=True)[:100]
     else: #use heap sort and return
         top_100 = nlargest(N, sim_q , key = sim_q.get )
         return sorted(top_100 ,reverse=True)
@@ -111,7 +111,7 @@ def get_opt_BM25(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
                         sim_q[doc_id] = tw * q_idf
 
     if True: #len(sim_q) < 100: ##heap sort makes thing wrong!
-        return sorted(sim_q, key=sim_q.get, reverse=True)
+        return sorted(sim_q, key=sim_q.get, reverse=True)[:100]
     else:  # use heap sort and return
         top_100 = nlargest(N, sim_q, key=sim_q.get)
         return sorted(top_100, reverse=True)
