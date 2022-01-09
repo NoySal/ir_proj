@@ -119,7 +119,6 @@ def get_opt_BM25(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
         top_N = nlargest(N, heap)
         return [value for key, value in sorted(top_N, reverse=True)]
 
-
 def get_opt_BM25_for_joint(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
     """
     BM25 retrival model from inverted index , intended for joining indices (returns tf score as well as doc)

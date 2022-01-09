@@ -9,7 +9,6 @@ import HWTFIDFPIPE as pipe1
 import pickle
 
 from opt_TfIDF import *
-
 import nltk
 # should be activated only one time !
 #nltk.download('stopwords')
