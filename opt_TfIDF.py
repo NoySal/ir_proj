@@ -40,7 +40,7 @@ def get_OPT_Tfidf(q_tokens , index ,corpus_docs, N=100):
     else: #use heap sort and return
         heap = [(value, key) for key, value in sim_q.items()]
         top_N = nlargest(N, heap)
-        [value for value, key in sorted(top_N, reverse=True)]
+        return [value for value, key in sorted(top_N, reverse=True)]
 
 def get_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100):
     """
@@ -79,7 +79,7 @@ def get_BM25(q_tokens , index ,corpus_docs , avg_dl , k =1.5,b =0.75 , N=100):
     else: #use heap sort and return
         heap = [(value, key) for key, value in sim_q.items()]
         top_N = nlargest(N, heap)
-        [value for value, key in sorted(top_N, reverse=True)]
+        return [value for value, key in sorted(top_N, reverse=True)]
 
 def get_opt_BM25(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
     """
@@ -117,4 +117,4 @@ def get_opt_BM25(q_tokens, index, corpus_docs, avg_dl, k=3, b=0.25, N=100):
     else: #use heap sort and return
         heap = [(value, key) for key, value in sim_q.items()]
         top_N = nlargest(N, heap)
-        [value for value, key in sorted(top_N, reverse=True)]
+        return [value for value, key in sorted(top_N, reverse=True)]
