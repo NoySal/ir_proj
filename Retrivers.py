@@ -80,19 +80,45 @@ def text_title_Merge(query, text_idx, text_n_docs, text_avg_doc, title_idx, titl
     tex_w = 0.74  # found via optimization
     tit_w = 0.31  # found via optimization
 
-    q_tokens = Corpus_Tokenizer(query)
-    text_docs = get_opt_BM25_for_joint(q_tokens, text_idx, text_n_docs,text_avg_doc, N)
-    title_docs = get_opt_BM25_for_joint(q_tokens, title_idx, title_n_docs, title_avg_doc, N)
+    q_tokens = ret.Corpus_Tokenizer(query)
+    text_retrival = get_opt_BM25_for_joint(q_tokens, text_idx, text_n_docs, text_avg_doc, N=N)
+    title_retrival = get_opt_BM25_for_joint(q_tokens, title_idx, title_n_docs, title_avg_doc, N=N)
     doc_dict = {}
-    for i, (doc, score) in enumerate(text_docs):
+    for doc, score in text_retrival:
         doc_dict[doc] = tex_w * score
-    for i, (doc, score) in enumerate(title_docs):
+    for doc, score in title_retrival:
         if doc in doc_dict.keys():
             doc_dict[doc] += tit_w * score
         else:
             doc_dict[doc] = tit_w * score
     return sorted(doc_dict, key=doc_dict.get, reverse=True)
 
+def weightSort(docs, prw , pvw ,pr_scale , pv_scale,tw  ):
+  """
+  resorts a list of docs according to new weights
+  docs : list of docs retrived from vectoric model
+  param prw: page rank weight to include
+  param pvw : page view wieght to include
+  param pr_scale , pv_scale : tuple , scaling for min max normalization (max , min , mean)
+  param tw : position at  K weight to consider
+  returns :  list of doc_id  , sorted by calculated weights.
+  """
+
+  weighted = {}
+
+  pr_max , pr_min , pr_mean = pr_scale
+  pv_max , pv_min , pv_mean = pv_scale
+
+
+  for i , doc_id in enumerate(docs):
+      #page rank score for document , normalized by min max
+      pr = (pr_dict.get(doc_id , 1) - pr_mean) / (pr_max -  pr_min) # 1 is approximatly PR mean
+      #page view score for document , normalized by minmax
+      pv = (pv_dict.get(doc_id , 670)  - pr_mean  )  / ( pr_max - pr_min)  # 670 mean value of page view
+      #position at k for document
+      pk = 1 / (i+1)
+      weighted[doc_id] = prw * pr + pvw * pv +tw * pk
+  return  sorted(weighted , key = weighted.get , reverse= True)
 
 def get_TFIDF(q_text, index, corpus_docs , avg_dl , N=100, PIPE='HW'):
     """
