@@ -32,5 +32,5 @@ _get_BM25_ - same , only using BM25 model and default k1 , b parameters of ( 1.2
 _get_opt_BM25_ - parameters were changed (after optimization - check the notebook in the link above! )  to k1 =3 , b =0.25
 _get_opt_BM25_for_joint_ -gets an inverted index and tokens and returns a list of (doc_id , tf-idf score) for further sorting and merging.
 
-N
+**inverted_index_class.py** - class for inverted index object, contains document length, total_terms and posting locs dictionaries. Capble of reading and writing posting locs to and from bins.
 
